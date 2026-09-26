@@ -9,7 +9,12 @@ import { loadModel, unloadModel, LLAMA_3_2_1B_INST_Q4_0 } from "@qvac/sdk";
 import { generate } from "./logic.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.PORT ? Number(process.env.PORT) : 30004;
+const DEFAULT_PORT = 30004;
+// process.env.PORT is a string and may be unset, blank, or non-numeric; guard
+// against Number() producing NaN, which would make server.listen() fail with
+// an opaque error instead of just starting on the default port.
+const parsedPort = Number(process.env.PORT);
+const PORT = process.env.PORT && Number.isInteger(parsedPort) && parsedPort > 0 ? parsedPort : DEFAULT_PORT;
 const PUBLIC_DIR = path.join(__dirname, "..", "public");
 
 function serveStatic(res) {
